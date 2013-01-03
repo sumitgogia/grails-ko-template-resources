@@ -13,8 +13,6 @@ class KoTemplateResourceMapper {
 
 	GrailsApplication grailsApplication
 
-	def paths = [].asSynchronized()
-
 	def map(resource, config){
 		String pathToTemplatesFolder = defaultPathToTemplatesFolder
 		def pathFromConfig = grailsApplication.config.flatten().get("grails.plugins.knockoutTemplateResources.pathToTemplatesFolder")
