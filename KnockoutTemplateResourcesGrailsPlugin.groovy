@@ -1,12 +1,11 @@
 import org.grails.plugin.resource.BundleResourceMapper
-import org.grails.plugin.resource.CSSBundleResourceMeta
-import org.grails.plugin.resource.JavaScriptBundleResourceMeta;
+import org.grails.plugin.resource.JavaScriptBundleResourceMeta
 import org.grails.plugin.resource.ResourceModule
 import org.grails.plugin.resource.ResourceProcessor
 import org.grails.plugin.resource.ResourceTagLib
 
 class KnockoutTemplateResourcesGrailsPlugin {
-	def version = "0.1.1"
+	def version = "0.1.2"
 	def grailsVersion = "2.0 > *"
     def dependsOn = [resources:'1.0 > *']
     def loadAfter = ['resources']
@@ -26,12 +25,13 @@ class KnockoutTemplateResourcesGrailsPlugin {
 	def scm = [ url: "https://github.com/sumitgogia/grails-ko-template-resources" ]
 
 	def license = "APACHE"
-	
-	//@TODO - Move this to Config.groovy
-	def koTemplateExtn = "html"
 
+	static defaultTemplateExtension = "html"
+	
     def doWithSpring = {
-        //org.grails.plugin.resource.CSSPreprocessorResourceMapper.defaultIncludes.add("**/*.$koTemplateExtn")
+		def koTemplateExtn = defaultTemplateExtension
+		def extnFromConfig = application.config.flatten().get("grails.plugins.knockoutTemplateResources.templateExtension")
+		if(extnFromConfig instanceof CharSequence) koTemplateExtn = extnFromConfig 
 		
 		BundleResourceMapper.MIMETYPE_TO_RESOURCE_META_CLASS.put("text/$koTemplateExtn", JavaScriptBundleResourceMeta)
 		List currentTypes = new ResourceModule().bundleTypes

@@ -1,8 +1,5 @@
-import org.grails.plugin.resource.mapper.MapperPhase
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.web.taglib.RenderTagLib;
-
-import java.util.concurrent.ConcurrentHashMap
+import org.grails.plugin.resource.mapper.MapperPhase
 
 /**
  * Ko-Template resource mapping. Convert knockout template(s) to .js files
@@ -10,34 +7,42 @@ import java.util.concurrent.ConcurrentHashMap
  * @author Sumit Gogia
  */
 class KoTemplateResourceMapper {
-	//@TODO - Move this to Config.groovy
-	static def koTemplateExtn = "html"
-	static def koPathToTemplatesFolder = "pages"
-	
-    static phase = MapperPhase.GENERATION
-    static defaultIncludes = [ "$koPathToTemplatesFolder/**/*.$koTemplateExtn" ]
+	static phase = MapperPhase.GENERATION
+	static defaultIncludes = [ "pages/**/*.html" ]
+	static defaultPathToTemplatesFolder = "/pages"
 
-    GrailsApplication grailsApplication
+	GrailsApplication grailsApplication
 
-    def paths = [].asSynchronized()
+	def paths = [].asSynchronized()
 
-    def map(resource, config){
-        File koFile = resource.processedFile
-        File jsFile = new File(koFile.absolutePath + '.js')
-        
-        try {
-            log.debug "Converting Ko-Template file [${koFile}] into [${jsFile}]"
+	def map(resource, config){
+		String pathToTemplatesFolder = defaultPathToTemplatesFolder
+		def pathFromConfig = grailsApplication.config.flatten().get("grails.plugins.knockoutTemplateResources.pathToTemplatesFolder")
+		if(pathFromConfig instanceof CharSequence) pathToTemplatesFolder = pathFromConfig
 
-            String pathRelativeToTemplatesFolder = resource.originalUrl[(koPathToTemplatesFolder.size()+2)..(-koTemplateExtn.size()-2)]
+		if(!resource.originalUrl?.startsWith(pathToTemplatesFolder)) {
+			log.error "Not processing resource [${resource.originalUrl}] as it is not under the templates folder [$pathToTemplatesFolder]. You should change/add this in your config: grails.resources.mappers.kotemplateresource.includes = ['${pathToTemplatesFolder[1..-1]}/**/*.${resource.sourceUrlExtension}']"
+			return
+		}
+
+		File koFile = resource.processedFile
+		File jsFile = new File(koFile.absolutePath + '.js')
+
+		try {
+			log.debug "Converting Ko-Template file [${koFile}] into [${jsFile}]"
+
+			int s = pathToTemplatesFolder.size()+1
+			int e = resource.sourceUrlExtension.size()+2
+			String pathRelativeToTemplatesFolder = resource.originalUrl[s..-e]
 			String escapedKoTmplString = "<script type='text/html' id='${pathRelativeToTemplatesFolder}'>${koFile?.text}</script>".encodeAsJavaScript()
 			jsFile.write("\$('body').append('${escapedKoTmplString}');")
-			
-            resource.processedFile = jsFile
-            resource.contentType = 'text/javascript'
-            resource.updateActualUrlFromProcessedFile()
-        } catch (Exception e) {
-            log.error("Error Converting Ko-Template file [${koFile}]", e)
-        }
-    }
+
+			resource.processedFile = jsFile
+			resource.contentType = 'text/javascript'
+			resource.updateActualUrlFromProcessedFile()
+		} catch (Exception e) {
+			log.error("Error Converting Ko-Template file [${koFile}]", e)
+		}
+	}
 
 }
