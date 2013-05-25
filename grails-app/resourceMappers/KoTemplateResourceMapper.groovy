@@ -1,5 +1,6 @@
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.grails.plugin.resource.mapper.MapperPhase
+import org.codehaus.groovy.grails.plugins.codecs.JavaScriptCodec
 
 /**
  * Ko-Template resource mapping. Convert knockout template(s) to .js files
@@ -32,7 +33,10 @@ class KoTemplateResourceMapper {
 			int s = pathToTemplatesFolder.size()+1
 			int e = resource.sourceUrlExtension.size()+2
 			String pathRelativeToTemplatesFolder = resource.originalUrl[s..-e]
-			String escapedKoTmplString = "<script type='text/html' id='${pathRelativeToTemplatesFolder}'>${koFile?.text}</script>".encodeAsJavaScript()
+
+			String koTmplString = "<script type='text/html' id='${pathRelativeToTemplatesFolder}'>${koFile?.text}</script>"
+			String escapedKoTmplString = JavaScriptCodec.encode(koTmplString)
+
 			jsFile.write("\$('body').append('${escapedKoTmplString}');")
 
 			resource.processedFile = jsFile

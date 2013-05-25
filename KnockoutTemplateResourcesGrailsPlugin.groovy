@@ -5,10 +5,10 @@ import org.grails.plugin.resource.ResourceProcessor
 import org.grails.plugin.resource.ResourceTagLib
 
 class KnockoutTemplateResourcesGrailsPlugin {
-	def version = "0.1.2"
+	def version = "0.1.3"
 	def grailsVersion = "2.0 > *"
     def dependsOn = [resources:'1.0 > *']
-    def loadAfter = ['resources']
+    def loadAfter = ["codecs", "resources"]
 	def pluginExcludes = [
 		"grails-app/views/error.gsp"
 	]
