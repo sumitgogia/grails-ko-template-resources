@@ -35,7 +35,7 @@ class KoTemplateResourceMapper {
 			String pathRelativeToTemplatesFolder = resource.originalUrl[s..-e]
 
 			String koTmplString = "<script type='text/html' id='${pathRelativeToTemplatesFolder}'>${koFile?.text}</script>"
-			String escapedKoTmplString = JavaScriptCodec.encode(koTmplString)
+			String escapedKoTmplString = JavaScriptCodec.encoder.encode(koTmplString)
 
 			jsFile.write("\$('body').append('${escapedKoTmplString}');")
 

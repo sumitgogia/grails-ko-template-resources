@@ -2,6 +2,7 @@ grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
+grails.project.dependency.resolver = "maven" // or ivy
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -11,15 +12,18 @@ grails.project.dependency.resolution = {
         grailsPlugins()
         grailsHome()
         grailsCentral()
+        mavenCentral()
     }
     dependencies {
     }
 
     plugins {
-        runtime ":resources:1.2.RC2"
-        build(":tomcat:$grailsVersion",
-                ":release:2.0.3",
-                ":rest-client-builder:1.0.2") {
+        runtime ":resources:1.2.14"
+        build(
+            ":release:3.0.1",
+            ":rest-client-builder:1.0.3"
+        ) {
+            excludes "svn", "spock"
             export = false
         }
     }
