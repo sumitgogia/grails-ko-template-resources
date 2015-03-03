@@ -5,7 +5,7 @@ import org.grails.plugin.resource.ResourceProcessor
 import org.grails.plugin.resource.ResourceTagLib
 
 class KnockoutTemplateResourcesGrailsPlugin {
-	def version = "0.1.3"
+	def version = "0.1.4"
 	def grailsVersion = "2.0 > *"
     def dependsOn = [resources:'1.0 > *']
     def loadAfter = ["codecs", "resources"]
